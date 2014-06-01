@@ -12,20 +12,21 @@
   line-height: 70px;
   font-weight: bold;
   font-size: 60px;
-  background-color: #89D5FF;
+  background-color: #85C8F7;
 }
 
 #board {
   width: 550px;
   height: 550px;
   margin: 20px auto;
-  background-image: url('../images/board_9x9_550x550.png');
+  /*background-image: url('../images/board_9x9_550x550.png');*/
+  background-color: pink;
 }
 
 #buttons {
   width: auto;
   height: 40px;
-  background-color: #F07F43;
+  background-color: #C97B6D;
 }
 
 .main_button {
