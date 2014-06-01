@@ -1,0 +1,48 @@
+#wrapper {
+  width: 700px;
+  height: 735px;
+  margin: 10px auto;
+  background-color: #DFF0BA; /*EDFFA3;*/
+}
+
+#header {
+  width: auto;
+  height: 70px;
+  text-align: center;
+  line-height: 70px;
+  font-weight: bold;
+  font-size: 60px;
+  background-color: #89D5FF;
+}
+
+#board {
+  width: 550px;
+  height: 550px;
+  margin: 20px auto;
+  background-image: url('../images/board_9x9_550x550.png');
+}
+
+#buttons {
+  width: auto;
+  height: 40px;
+  background-color: #F07F43;
+}
+
+.main_button {
+  margin: 10px 0 0 25px;
+}
+
+#restart_button {
+  position: relative;
+  float: right;
+  margin-right: 25px;
+}
+
+#footer {
+  width: auto;
+  height: 35px;
+  padding-left: 15px;
+  line-height: 35px;
+  background-color: #89D5FF;
+}
+
