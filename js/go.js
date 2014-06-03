@@ -1,26 +1,40 @@
-// global consts:
-var whiteStoneImg;
-var blackStoneImg;
-
 // __main__:
 function go() {
   'use strict';
+  // 'global' consts:
   var theBoard;
+  var stoneImages = {white: '', black: ''};
+  var playerColor = 'white';
 
   buildBoard(theBoard, 9);
   //TEST__placeStones(theBoard);
 
   // Templates:
-  function Board(boardSize) {
-    var col, row;
-    this.imgSrc;
-    this.grid = new Array(boardSize);
-    for (col = 0; col < boardSize; ++col) {
-      this.grid[col] = new Array(boardSize);
-      for (row = 0; row < boardSize; ++row) {
-        this.grid[col][row] = new Intersection();
+  function Board(boardSize, imgPath) {
+    var t, c, r;
+    this.imgSrc = imgPath;
+    this.generateTableHtml = function () {
+      var t = '<table id="table">';
+      for (c = 0; c < boardSize; ++c) {
+        t += '<tr>';
+        for (r = 0; r < boardSize; ++r) {
+          t += '<td id="cell_' + this.getCellNum(c, r) + '" class="cell"></td>';
+        }
+        t += '</tr>';
       }
-    }
+      t += '</table>';
+      return t;
+    };
+    this.getCellNum = function (col, row) {
+      if (col >= boardSize || row >= boardSize)
+        throw new RangeError('Invalid col or row in getCellNum()');
+      return col*boardSize + row;
+    };
+    this.getColRow = function (cellNum) {
+      if (cellNum > boardSize - 1)
+        throw new RangeError('Invalid cellNum in getColRow()');
+      return [cellNum % (boardSize -1), Math.floor(cellNum/boardSize)];
+    };
   }
 
   function Intersection() {
@@ -35,18 +49,15 @@ function go() {
     var topMost, leftMost, stoneDiameter,
         intersection,
         col, row;
-    //var boardHtml = '';
     var boardDiv = document.getElementById('board');
     switch (boardSize) {
       case 9:
-        theBoard = new Board(boardSize);
-        theBoard.imgSrc = 'images/board_9x9_550x550.png';
-        whiteStoneImg = 'images/stone_white_60x60.png';
-        blackStoneImg = 'images/stone_black_60x60.png';
+        theBoard = new Board(boardSize, 'images/board_9x9_550x550.png');
+        stoneImages.white = 'images/stone_white_55x55.png';
+        stoneImages.black = 'images/stone_black_55x55.png';
         topMost = 5;
         leftMost = 5;
-        stoneDiameter = 60
-        //boardDiv.style.padding = "5px";
+        stoneDiameter = 60;
         break;
       case 13:
         theBoard = new Board(boardSize);
@@ -59,20 +70,25 @@ function go() {
       default:
         throw 'Invalid boardSize passed to makeBoard()';        
     }
-    // set intersection coordinates
-    for (col = 0; col < 9; ++col) {
-      for (row = 0; row < 9; ++row) {
-        intersection = theBoard.grid[col][row];
-        intersection.top = topMost + stoneDiameter * row;
-        intersection.left = leftMost + stoneDiameter * col;
-        //boardHtml += '<div class="cell"></div>';
-      }
-    }
-    // set board background image
+    // set board background HTML data
     boardDiv.style.backgroundImage = 'url("' + theBoard.imgSrc + '")';
+    boardDiv.innerHTML = theBoard.generateTableHtml();
+    $('.cell').click(function () {
+      //TODO: make stone color dynamic:
+      $(this).css({'background-image': 'url("' + stoneImages[playerColor] + '")',
+                   'background-repeat': 'no-repeat',
+                   'background-position': 'center center'});
+      togglePlayerColor();
+    });
   }
 
-  function placeStone(theBoard, col, row, color) {
+  function togglePlayerColor() {
+    if (playerColor === 'white')
+      playerColor = 'black';
+    else
+      playerColor = 'white';
+  }
+  /*function placeStone(theBoard, col, row, color) {
     var intersection = theBoard.grid[col][row];
       if (color !== 'w' && color !== 'b')
         throw 'Invalid color passed to placeStone()';
@@ -82,7 +98,7 @@ function go() {
   function TEST__placeStones(theBoard) {
     var intersections = [[0,0, 'w'], [4,2, 'w'], [8,3, 'b']];
 
-  }
+  }*/
 } // END: go()
 
 
