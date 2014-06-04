@@ -24,9 +24,6 @@
 
 #table {
   float: left; /* prevent margin collapse */
-  width: 530px;
-  height: 530px;
-  margin: 10px;
 }
 
 

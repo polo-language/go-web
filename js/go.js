@@ -3,16 +3,17 @@ function go() {
   'use strict';
   // 'global' consts:
   var theBoard;
-  var stoneImages = {white: '', black: ''};
-  var playerColor = 'white';
+  var stoneImages = {w: '', b: ''};
+  var playerColor = 'w';
 
   buildBoard(theBoard, 9);
-  //TEST__placeStones(theBoard);
 
   // Templates:
   function Board(boardSize, imgPath) {
     var t, c, r;
     this.imgSrc = imgPath;
+    this.intersections = [];
+
     this.generateTableHtml = function () {
       var t = '<table id="table">';
       for (c = 0; c < boardSize; ++c) {
@@ -37,27 +38,18 @@ function go() {
     };
   }
 
-  function Intersection() {
-    this.left;
-    this.top;
-    this.stone;
-    this.image;
-  }
-
   // Methods:
   function buildBoard(theBoard, boardSize) {
-    var topMost, leftMost, stoneDiameter,
-        intersection,
-        col, row;
+    var tableCss;
     var boardDiv = document.getElementById('board');
     switch (boardSize) {
       case 9:
         theBoard = new Board(boardSize, 'images/board_9x9_550x550.png');
-        stoneImages.white = 'images/stone_white_55x55.png';
-        stoneImages.black = 'images/stone_black_55x55.png';
-        topMost = 5;
-        leftMost = 5;
-        stoneDiameter = 60;
+        stoneImages.w = 'images/stone_white_55x55.png';
+        stoneImages.b = 'images/stone_black_55x55.png';
+        tableCss = {'width': '530px',
+                    'height': '530px',
+                    'margin': '10px'};
         break;
       case 13:
         theBoard = new Board(boardSize);
@@ -70,35 +62,32 @@ function go() {
       default:
         throw 'Invalid boardSize passed to makeBoard()';        
     }
-    // set board background HTML data
+    // set board and table HTML and CSS
     boardDiv.style.backgroundImage = 'url("' + theBoard.imgSrc + '")';
     boardDiv.innerHTML = theBoard.generateTableHtml();
+    $('#table').css(tableCss);
     $('.cell').click(function () {
-      //TODO: make stone color dynamic:
-      $(this).css({'background-image': 'url("' + stoneImages[playerColor] + '")',
-                   'background-repeat': 'no-repeat',
-                   'background-position': 'center center'});
-      togglePlayerColor();
+      placeStone(theBoard, this);
     });
   }
 
   function togglePlayerColor() {
-    if (playerColor === 'white')
-      playerColor = 'black';
+    if (playerColor === 'w')
+      playerColor = 'b';
     else
-      playerColor = 'white';
-  }
-  /*function placeStone(theBoard, col, row, color) {
-    var intersection = theBoard.grid[col][row];
-      if (color !== 'w' && color !== 'b')
-        throw 'Invalid color passed to placeStone()';
-      intersection.stone = color;    
+      playerColor = 'w';
   }
 
-  function TEST__placeStones(theBoard) {
-    var intersections = [[0,0, 'w'], [4,2, 'w'], [8,3, 'b']];
-
-  }*/
+  function placeStone(theBoard, that) {
+    var cellNum = that.id.split('_')[1]; // get number after underscore
+    if (theBoard.intersections[cellNum] === 'w' || theBoard.intersections[cellNum] === 'b')
+      return;
+    theBoard.intersections[cellNum] = playerColor;
+    $(that).css({'background-image': 'url("' + stoneImages[playerColor] + '")',
+                   'background-repeat': 'no-repeat',
+                   'background-position': 'center center'});
+    togglePlayerColor();
+  }
 } // END: go()
 
 
