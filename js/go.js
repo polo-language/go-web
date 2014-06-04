@@ -2,9 +2,11 @@
 function go() {
   'use strict';
   // 'global' consts:
-  var theBoard;
-  var stoneImages = {w: '', b: ''};
-  var playerColor = 'w';
+  var theBoard,
+      intersections = [],
+      moves = [],
+      stoneImages = {w: '', b: ''},
+      playerColor = 'w';
 
   buildBoard(theBoard, 9);
 
@@ -12,7 +14,6 @@ function go() {
   function Board(boardSize, imgPath) {
     var t, c, r;
     this.imgSrc = imgPath;
-    this.intersections = [];
 
     this.generateTableHtml = function () {
       var t = '<table id="table">';
@@ -67,8 +68,22 @@ function go() {
     boardDiv.innerHTML = theBoard.generateTableHtml();
     $('#table').css(tableCss);
     $('.cell').click(function () {
-      placeStone(theBoard, this);
+      placeStone(this);
     });
+  }
+
+  function placeStone(that) {
+    var cellNum = that.id.split('_')[1]; // get number after underscore
+    if (intersections[cellNum] === 'w' || intersections[cellNum] === 'b')
+      return;
+    intersections[cellNum] = playerColor;
+    moves[moves.length] = Number(cellNum);
+    console.log(moves);
+    $(that).css({'background-image': 'url("' + stoneImages[playerColor] + '")',
+                   'background-repeat': 'no-repeat',
+                   'background-position': 'center center'});
+    // TODO: submitMoveToServer();
+    togglePlayerColor();
   }
 
   function togglePlayerColor() {
@@ -78,16 +93,37 @@ function go() {
       playerColor = 'w';
   }
 
-  function placeStone(theBoard, that) {
-    var cellNum = that.id.split('_')[1]; // get number after underscore
-    if (theBoard.intersections[cellNum] === 'w' || theBoard.intersections[cellNum] === 'b')
-      return;
-    theBoard.intersections[cellNum] = playerColor;
-    $(that).css({'background-image': 'url("' + stoneImages[playerColor] + '")',
-                   'background-repeat': 'no-repeat',
-                   'background-position': 'center center'});
+  // button click handlers
+  document.getElementById('pass_button').onclick = function () {
+    // TODO: submitMoveToServer();
+    moves[moves.length] = 'pass';
     togglePlayerColor();
-  }
+  };
+
+  document.getElementById('undo_button').onclick = function () {
+    var lastMove = moves.pop();
+    if (typeof lastMove === 'number') {
+      var cellId = 'cell_' + lastMove;
+      document.getElementById(cellId).style.backgroundImage = 'none';
+      intersections[lastMove] = '';
+      togglePlayerColor();
+      // TODO: submitMoveToServer();
+    }
+    else if (lastMove === 'pass') {
+      // TODO: submitMoveToServer();
+      togglePlayerColor();
+    }
+    return; // handles pop from empty array too
+  };
+
+  document.getElementById('restart_button').onclick = function () {
+    // should generate some grander restart procedure with eventual settings screen...
+    // TODO: restartServer();
+    intersections = [];
+    moves = [];
+    $('.cell').css('backgroundImage', 'none');
+  };
+
 } // END: go()
 
 
