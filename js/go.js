@@ -1,25 +1,24 @@
-// __main__:
 function go() {
   'use strict';
   // 'global' consts:
-  var theBoard,
-      intersections = [],
+  var intersections = [],
       moves = [],
       stoneImages = {w: '', b: ''},
-      playerColor = 'w';
+      playerColor = 'w',
+      boardLocked = false;
 
-  buildBoard(theBoard, 9);
+  var theBoard = buildBoard(9);
 
   // Templates:
   function Board(boardSize, imgPath) {
-    var t, c, r;
     this.imgSrc = imgPath;
+    var lastCellNum = boardSize * boardSize - 1;
 
     this.generateTableHtml = function () {
       var t = '<table id="table">';
-      for (c = 0; c < boardSize; ++c) {
+      for (var c = 0; c < boardSize; ++c) {
         t += '<tr>';
-        for (r = 0; r < boardSize; ++r) {
+        for (var r = 0; r < boardSize; ++r) {
           t += '<td id="cell_' + this.getCellNum(c, r) + '" class="cell"></td>';
         }
         t += '</tr>';
@@ -33,56 +32,69 @@ function go() {
       return col*boardSize + row;
     };
     this.getColRow = function (cellNum) {
-      if (cellNum > boardSize - 1)
+      if (cellNum > lastCellNum)
         throw new RangeError('Invalid cellNum in getColRow()');
-      return [cellNum % (boardSize -1), Math.floor(cellNum/boardSize)];
+      return [cellNum % boardSize, Math.floor(cellNum/boardSize)];
     };
   }
 
   // Methods:
-  function buildBoard(theBoard, boardSize) {
-    var tableCss;
-    var boardDiv = document.getElementById('board');
+  function buildBoard(boardSize) {
+    var boardDiv = document.getElementById('board'),
+        board,
+        tableCss;
+    
     switch (boardSize) {
       case 9:
-        theBoard = new Board(boardSize, 'images/board_9x9_550x550.png');
-        stoneImages.w = 'images/stone_white_55x55.png';
-        stoneImages.b = 'images/stone_black_55x55.png';
-        tableCss = {'width': '530px',
-                    'height': '530px',
-                    'margin': '10px'};
+        board = new Board(boardSize, 'static/images/board_9x9_550x550.png');
+        stoneImages.w = 'static/images/stone_white_55x55.png';
+        stoneImages.b = 'static/images/stone_black_55x55.png';
+        tableCss = {
+          'width': '530px',
+          'height': '530px',
+          'margin': '10px'
+        };
         break;
       case 13:
-        theBoard = new Board(boardSize);
-        theBoard.imgSrc = 'images/board_13x13_550x550.png';
+        board = new Board(boardSize);
+        board.imgSrc = 'static/images/board_13x13_550x550.png';
         break;
       case 19:
-        theBoard = new Board(boardSize);
-        theBoard.imgSrc = 'images/board_19x19_550x550.png';
+        board = new Board(boardSize);
+        board.imgSrc = 'static/images/board_19x19_550x550.png';
         break;
       default:
-        throw 'Invalid boardSize passed to makeBoard()';        
+        throw 'Invalid board size.';        
     }
     // set board and table HTML and CSS
-    boardDiv.style.backgroundImage = 'url("' + theBoard.imgSrc + '")';
-    boardDiv.innerHTML = theBoard.generateTableHtml();
+    boardDiv.style.backgroundImage = 'url("' + board.imgSrc + '")';
+    boardDiv.innerHTML = board.generateTableHtml();
     $('#table').css(tableCss);
     $('.cell').click(function () {
       placeStone(this);
     });
+    return board;
   }
 
   function placeStone(that) {
     var cellNum = that.id.split('_')[1]; // get number after underscore
-    if (intersections[cellNum] === 'w' || intersections[cellNum] === 'b')
+    if (boardLocked === true || intersections[cellNum] === 'w' || intersections[cellNum] === 'b')
       return;
+    boardLocked = true;
     intersections[cellNum] = playerColor;
     moves[moves.length] = Number(cellNum);
-    console.log(moves);
+    //console.log(moves); // debug
+    //console.log(theBoard.getColRow(cellNum));
     $(that).css({'background-image': 'url("' + stoneImages[playerColor] + '")',
                    'background-repeat': 'no-repeat',
                    'background-position': 'center center'});
-    // TODO: submitMoveToServer();
+    // TODO:
+    try {
+      //submitMove(theBoard.getColRow(cellNum));
+    }
+    finally {
+      boardLocked = false;
+    }
     togglePlayerColor();
   }
 
@@ -94,12 +106,14 @@ function go() {
   }
 
   // button click handlers
+  // pass (move)
   document.getElementById('pass_button').onclick = function () {
-    // TODO: submitMoveToServer();
+    // TODO: submitMove();
     moves[moves.length] = 'pass';
     togglePlayerColor();
   };
 
+  // undo (move)
   document.getElementById('undo_button').onclick = function () {
     var lastMove = moves.pop();
     if (typeof lastMove === 'number') {
@@ -107,15 +121,16 @@ function go() {
       document.getElementById(cellId).style.backgroundImage = 'none';
       intersections[lastMove] = '';
       togglePlayerColor();
-      // TODO: submitMoveToServer();
+      // TODO: submitMove();
     }
     else if (lastMove === 'pass') {
-      // TODO: submitMoveToServer();
+      // TODO: submitMove();
       togglePlayerColor();
     }
     return; // handles pop from empty array too
   };
 
+  // restart/clear board
   document.getElementById('restart_button').onclick = function () {
     // should generate some grander restart procedure with eventual settings screen...
     // TODO: restartServer();
@@ -123,6 +138,24 @@ function go() {
     moves = [];
     $('.cell').css('backgroundImage', 'none');
   };
+
+  function submitMove(colAndRow) {
+    $.ajax({
+      type: 'GET',
+      url: '/move',
+      data: {
+        'col': colAndRow[0],
+        'row': colAndRow[1],
+      },
+      success: function(response) {
+        // TODO: handle computer move here
+        console.log(response);
+      },
+      error: function() {
+        throw 'Unable to connect to go engine.';
+      }
+    });
+  }
 
 } // END: go()
 
