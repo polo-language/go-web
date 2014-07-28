@@ -46,9 +46,9 @@ function go() {
     
     switch (boardSize) {
       case 9:
-        board = new Board(boardSize, 'static/images/board_9x9_550x550.png');
-        stoneImages.w = 'static/images/stone_white_55x55.png';
-        stoneImages.b = 'static/images/stone_black_55x55.png';
+        board = new Board(boardSize, 'images/board_9x9_550x550.png');
+        stoneImages.w = 'images/stone_white_55x55.png';
+        stoneImages.b = 'images/stone_black_55x55.png';
         tableCss = {
           'width': '530px',
           'height': '530px',
@@ -57,11 +57,11 @@ function go() {
         break;
       case 13:
         board = new Board(boardSize);
-        board.imgSrc = 'static/images/board_13x13_550x550.png';
+        board.imgSrc = 'images/board_13x13_550x550.png';
         break;
       case 19:
         board = new Board(boardSize);
-        board.imgSrc = 'static/images/board_19x19_550x550.png';
+        board.imgSrc = 'images/board_19x19_550x550.png';
         break;
       default:
         throw 'Invalid board size.';        

@@ -49,6 +49,7 @@ p, label, select {
 
 #selector_panel {
   height: 300px;
+  visibility: hidden;
   /*background-color: pink;*/
 }
 
