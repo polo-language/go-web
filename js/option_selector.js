@@ -17,29 +17,13 @@ function scrollImages() {
 }
 
 function submitSelection() {
+	var boardSize = $('input[name=board_size]:checked').val();
 	var handicapEl = document.getElementById('handicap_listbox');
 	var handicap = handicapEl.options[handicapEl.selectedIndex].value;
-	var boardSize = $('input[name=board_size]:checked').val();
-	var quit = false;
-	if (handicap === undefined) {
-		$('#handicap_selector_label').css('color', 'red');
-		quit = true;
-	} else {
-		$('#handicap_selector_label').css('color', 'white');
-	}
-	if (boardSize === undefined) {
-		$('#board_selector_label').css('color', 'red');
-		quit = true;
-	} else {
-		$('#board_selector_label').css('color', 'white');
-	}
-
-	if (quit === true)
-		return;
-	else
-		loadBoardPage();
+	loadBoardPage(boardSize, handicap);
 }
 
-function loadBoardPage() {
-	alert('Dummy box!');
+function loadBoardPage(boardSize, handicap) {
+	// TODO
+	alert('Board size: ' + boardSize + '  Handicap: ' + handicap);
 }
