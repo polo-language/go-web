@@ -7,16 +7,17 @@
   <script src="js/option_selector.js"></script>
   <title>Polo Go</title>
 </head>
-<body onload="animateSelector">
+<body onload="animateSelector()">
   <div id="wrapper">
     <!-- div style="overflow: hidden; height: 0px; width: 0px;">&nbsp;</div -->
     <div id="hero_div_top">
+      <img class="hero_img" src="images//NineDragonsScroll_top_small.jpg">
       <div id="title_shadow">&nbsp;</div>
       <div id="title">Play Go with a friend!</div>
     </div>
     <div id="selector_panel">
       <div id="board_selector">
-        <p>Choose a board size</p>
+        <p id="board_selector_label">Choose a board size</p>
 
         <form id="board_size_form">
           <input id="board_radio_1" type="radio" name="board_size" value="9">
@@ -31,7 +32,7 @@
       </div>
 
       <div id="handicap_selector">
-        <p>Choose your handicap</p>
+        <p id="handicap_selector_label">Choose your handicap</p>
 
         <select id="handicap_listbox">
           <option value="0">0</option>
@@ -45,10 +46,11 @@
       </div>
       
       <div id="submit_box">
-        <input id="submit_button" type="button" value="Play Go!">
+        <input id="submit_button" type="button" onclick="submitSelection()" value="Play Go!">
       </div>
     </div>
     <div id="hero_div_bottom">
+      <img class="hero_img" src="images//NineDragonsScroll_bottom_small.jpg">
       <div id="copywrite_shadow">&nbsp;</div>
       <div id="copywrite">© Angelo Polo - 2014</div>
     </div>
