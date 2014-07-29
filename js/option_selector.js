@@ -27,3 +27,14 @@ function loadBoardPage(boardSize, handicap) {
 	// TODO
 	alert('Board size: ' + boardSize + '  Handicap: ' + handicap);
 }
+
+$(document).ready(function () {
+  $('#submit_button').hover(
+    function () {
+      $(this).css('background-image', 'url(images/stone_white_55x55_hover.png)');
+    },
+    function () {
+      $(this).css('background-image', 'url(images/stone_white_55x55.png)');
+    }
+  );
+});
