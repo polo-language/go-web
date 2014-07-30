@@ -1,8 +1,26 @@
 #wrapper {
+  position: relative;
   width: 700px;
   height: 735px;
   margin: 10px auto;
   background-color: #DFF0BA; /*EDFFA3;*/
+}
+
+#messages_parent {
+  position: absolute;
+  right: 50%;
+}
+
+
+#messages {
+  visibility: hidden;
+  position: relative;
+  right: -50%;
+  top: 300px;
+  font-size: 40px;
+  background-color: #444444;
+  border: 10px black solid;
+  opacity: 0.6;
 }
 
 #header {
@@ -25,8 +43,6 @@
 #table {
   float: left; /* prevent margin collapse */
 }
-
-
 
 #buttons {
   width: auto;

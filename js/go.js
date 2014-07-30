@@ -69,6 +69,7 @@ function go() {
     // set board and table HTML and CSS
     boardDiv.style.backgroundImage = 'url("' + board.imgSrc + '")';
     boardDiv.innerHTML = board.generateTableHtml();
+    boardDiv.style.cursor = 'url(images/cursor_' + playerColor + '.png) 10 10, crosshair';
     $('#table').css(tableCss);
     $('.cell').click(function () {
       placeStone(this);
@@ -78,9 +79,9 @@ function go() {
 
   function placeStone(that) {
     var cellNum = that.id.split('_')[1]; // get number after underscore
-    if (boardLocked === true || intersections[cellNum] === 'w' || intersections[cellNum] === 'b')
-      return;
-    boardLocked = true;
+    //if (boardLocked === true || intersections[cellNum] === 'w' || intersections[cellNum] === 'b')
+    //  return;
+    //boardLocked = true;
     intersections[cellNum] = playerColor;
     moves[moves.length] = Number(cellNum);
     //console.log(moves); // debug
@@ -89,12 +90,12 @@ function go() {
                    'background-repeat': 'no-repeat',
                    'background-position': 'center center'});
     // TODO:
-    try {
+    /*try {
       //submitMove(theBoard.getColRow(cellNum));
     }
     finally {
       boardLocked = false;
-    }
+    }*/
     togglePlayerColor();
   }
 
@@ -103,12 +104,20 @@ function go() {
       playerColor = 'b';
     else
       playerColor = 'w';
+    document.getElementById('board').style.cursor = 'url(images/cursor_' + playerColor + '.png) 10 10, crosshair';
   }
 
   // button click handlers
   // pass (move)
   document.getElementById('pass_button').onclick = function () {
     // TODO: submitMove();
+    var messageDiv = document.getElementById('messages');
+    if (playerColor === 'w')
+      messageDiv.innerHTML = 'White Passes';
+    else
+      messageDiv.innerHTML = 'Black Passes';
+    messageDiv.style.visibility = 'visible';
+
     moves[moves.length] = 'pass';
     togglePlayerColor();
   };
