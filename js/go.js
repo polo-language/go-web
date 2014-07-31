@@ -57,11 +57,11 @@ function go() {
         break;
       case 13:
         board = new Board(boardSize);
-        board.imgSrc = 'images/board_13x13_550x550.png';
+        board.imgSrc = 'images/board_13x13.png';
         break;
       case 19:
         board = new Board(boardSize);
-        board.imgSrc = 'images/board_19x19_550x550.png';
+        board.imgSrc = 'images/board_19x19.png';
         break;
       default:
         throw 'Invalid board size.';        
@@ -69,17 +69,16 @@ function go() {
     // set board and table HTML and CSS
     boardDiv.style.backgroundImage = 'url("' + board.imgSrc + '")';
     boardDiv.innerHTML = board.generateTableHtml();
-    boardDiv.style.cursor = 'url(images/cursor_' + playerColor + '.png) 10 10, crosshair';
+    setPlayerColor('w');
     $('#table').css(tableCss);
     $('.cell').click(function () {
       placeStone(this);
     });
-    return board;
-  }
+    return  }
 
   function placeStone(that) {
     var cellNum = that.id.split('_')[1]; // get number after underscore
-    //if (boardLocked === true || intersections[cellNum] === 'w' || intersections[cellNum] === 'b')
+    //if (bed === true || intersections[cellNum] === 'w' || intersections[cellNum] === 'b')
     //  return;
     //boardLocked = true;
     intersections[cellNum] = playerColor;
@@ -101,9 +100,13 @@ function go() {
 
   function togglePlayerColor() {
     if (playerColor === 'w')
-      playerColor = 'b';
+      setPlayerColor('b');
     else
-      playerColor = 'w';
+      setPlayerColor('w');
+  }
+
+  function setPlayerColor(newColor) {
+    playerColor = newColor;
     document.getElementById('board').style.cursor = 'url(images/cursor_' + playerColor + '.png) 10 10, crosshair';
   }
 
@@ -111,16 +114,22 @@ function go() {
   // pass (move)
   document.getElementById('pass_button').onclick = function () {
     // TODO: submitMove();
-    var messageDiv = document.getElementById('messages');
     if (playerColor === 'w')
-      messageDiv.innerHTML = 'White Passes';
+      flashMessageBox('White Passes');
     else
-      messageDiv.innerHTML = 'Black Passes';
-    messageDiv.style.visibility = 'visible';
-
+      flashMessageBox('Black Passes');
     moves[moves.length] = 'pass';
     togglePlayerColor();
   };
+
+  function flashMessageBox(message) {
+    var messageDiv = document.getElementById('messages');
+    messageDiv.innerHTML = message;
+    messageDiv.style.visibility = 'visible';
+    window.setTimeout(function () {
+      messageDiv.style.visibility = 'hidden';
+    }, 2000);
+  }
 
   // undo (move)
   document.getElementById('undo_button').onclick = function () {
@@ -129,6 +138,10 @@ function go() {
       var cellId = 'cell_' + lastMove;
       document.getElementById(cellId).style.backgroundImage = 'none';
       intersections[lastMove] = '';
+      if (playerColor === 'w') // undo move of previous color
+        flashMessageBox('Undo Black\'s Move');
+      else
+        flashMessageBox('Undo White\'s Move');
       togglePlayerColor();
       // TODO: submitMove();
     }
@@ -141,11 +154,13 @@ function go() {
 
   // restart/clear board
   document.getElementById('restart_button').onclick = function () {
-    // should generate some grander restart procedure with eventual settings screen...
+    // should initiate some grander restart procedure with eventual settings screen...
     // TODO: restartServer();
     intersections = [];
     moves = [];
     $('.cell').css('backgroundImage', 'none');
+    setPlayerColor('w');
+    flashMessageBox('Game Reset');
   };
 
   function submitMove(colAndRow) {
