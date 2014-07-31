@@ -1,4 +1,5 @@
 @import url(http://fonts.googleapis.com/css?family=Dancing+Script:700);
+/* font-family: 'Dancing Script', cursive; */
 
 body {
   background-color: #666666;
@@ -7,7 +8,7 @@ body {
 #wrapper {
   position: relative;
   width: 800px;
-  margin: auto;
+  margin: 10px auto;
   overflow: hidden;
   background-color: #444444;
 }

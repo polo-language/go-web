@@ -7,7 +7,11 @@ function go() {
       playerColor = 'w',
       boardLocked = false;
 
-  var theBoard = buildBoard(9);
+  var theBoard = buildBoard(13);
+  // TODO: move these above since not set individually per board
+  stoneImages.w = 'images/stone_white_55x55.png';
+  stoneImages.b = 'images/stone_black_55x55.png';
+        
 
   // Templates:
   function Board(boardSize, imgPath) {
@@ -47,27 +51,31 @@ function go() {
     switch (boardSize) {
       case 9:
         board = new Board(boardSize, 'images/board_9x9_550x550.png');
-        stoneImages.w = 'images/stone_white_55x55.png';
-        stoneImages.b = 'images/stone_black_55x55.png';
         tableCss = {
-          'width': '530px',
-          'height': '530px',
-          'margin': '10px'
+          'width': '603px',
+          'height': '603px',
+          'margin': '5px',
+          'border': '1px solid green',
         };
         break;
       case 13:
-        board = new Board(boardSize);
-        board.imgSrc = 'images/board_13x13.png';
+        board = new Board(boardSize, 'images/board_13x13.png');
+        tableCss = {
+          'width': '603px',
+          'height': '603px',
+          'margin': '5px',
+          'border': '1px solid green',
+        };
         break;
       case 19:
-        board = new Board(boardSize);
-        board.imgSrc = 'images/board_19x19.png';
+        board = new Board(boardSize, 'images/board_19x19.png');
         break;
       default:
         throw 'Invalid board size.';        
     }
     // set board and table HTML and CSS
     boardDiv.style.backgroundImage = 'url("' + board.imgSrc + '")';
+    boardDiv.style.backgroundSize = '100% 100%';
     boardDiv.innerHTML = board.generateTableHtml();
     setPlayerColor('w');
     $('#table').css(tableCss);
@@ -78,8 +86,9 @@ function go() {
 
   function placeStone(that) {
     var cellNum = that.id.split('_')[1]; // get number after underscore
-    //if (bed === true || intersections[cellNum] === 'w' || intersections[cellNum] === 'b')
-    //  return;
+    // check if booardLocked === true || ...
+    if (intersections[cellNum] === 'w' || intersections[cellNum] === 'b')
+      return;
     //boardLocked = true;
     intersections[cellNum] = playerColor;
     moves[moves.length] = Number(cellNum);
@@ -87,6 +96,7 @@ function go() {
     //console.log(theBoard.getColRow(cellNum));
     $(that).css({'background-image': 'url("' + stoneImages[playerColor] + '")',
                    'background-repeat': 'no-repeat',
+                   'background-size': '100% 100%',
                    'background-position': 'center center'});
     // TODO:
     /*try {
