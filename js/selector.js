@@ -1,3 +1,7 @@
+$(document).ready(function () {
+  animateSelector();
+});
+
 function animateSelector() {
   var wrapper = $('#wrapper');
   var startLeft = wrapper.offset().left + wrapper.width() + 10;
@@ -12,20 +16,16 @@ function animateSelector() {
 }
 
 function scrollImages() {
-  var heroDivTop = $('.hero_img');
-  heroDivTop.animate({'left': 0}, 60000);
+  $('.hero_img').animate({'left': 0}, 70000);
 }
 
 function submitSelection() {
-	var boardSize = $('input[name=board_size]:checked').val();
-	var handicapEl = document.getElementById('handicap_listbox');
-	var handicap = handicapEl.options[handicapEl.selectedIndex].value;
-	loadBoardPage(boardSize, handicap);
-}
+  var boardSize = $('input[name=board_size]:checked').val();
+  var handicapEl = document.getElementById('handicap_listbox');
+  var handicap = handicapEl.options[handicapEl.selectedIndex].value;
 
-function loadBoardPage(boardSize, handicap) {
-	// TODO
-	alert('Board size: ' + boardSize + '  Handicap: ' + handicap);
+  go(boardSize, handicap); // in game.js
+  swapBoardForSelector(); // in swappers.js
 }
 
 $(document).ready(function () {

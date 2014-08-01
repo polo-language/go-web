@@ -1,0 +1,23 @@
+body {
+  background-color: #666666;
+}
+
+#wrapper {
+  position: relative;
+  width: 800px;
+  height: 800px;
+  margin: 10px auto;
+  overflow: hidden;
+  background-color: #444444;
+}
+
+.stone_button {
+  background-image: url(../images/stone_white_55x55.png);
+  background-size: contain;
+  text-align: center;
+  cursor: pointer;
+}
+
+.clear {
+  clear: both;
+}

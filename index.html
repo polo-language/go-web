@@ -2,29 +2,88 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <link rel="stylesheet" href="css/go.css" />
+  <link rel="stylesheet" href="css/common.css">
+  <link rel="stylesheet" href="css/selector.css">
+  <link rel="stylesheet" href="css/game.css">
   <script src="js/jquery-2.1.1.min.js"></script>
-  <script src="js/go.js"></script>
+  <script src="js/selector.js"></script>
+  <script src="js/game.js"></script>
+  <script src="js/swappers.js"></script>
   <title>Polo Go</title>
 </head>
-<body onload="go();">
+<body>
   <div id="wrapper">
-    <div id="messages_parent">
-      <div id="messages"></div>
-    </div>
-    <div id="header">Polo Go</div>
 
-    <div id="board"></div>
+    <!-- start selector -->
+    <div id="selector">
+      <div id="hero_div_top">
+        <img class="hero_img" src="images//NineDragonsScroll_top_small.jpg">
+        <div id="title_shadow">&nbsp;</div>
+        <div id="title">Play Go with a friend!</div>
+      </div>
+      <div id="selector_panel">
+        <div id="board_selector">
+          <p id="board_selector_label">Choose a board size</p>
 
-    <div id="buttons">
-      <button id="restart_button" class="main_button">Restart</button>
-      <button id="pass_button" class="main_button">Pass</button>
-      <button id="undo_button" class="main_button">Undo</button>
+          <form id="board_size_form">
+            <input id="board_radio_1" type="radio" name="board_size" value="9">
+            <label for="board_radio_1">9x9</label><br>
+
+            <input id="board_radio_2" type="radio" name="board_size" value="13" checked>
+            <label for="board_radio_2">13x13</label><br>
+
+            <input id="board_radio_3" type="radio" name="board_size" value="19">
+            <label for="board_radio_3">19x19</label>
+          </form>
+        </div>
+
+        <div id="handicap_selector">
+          <p id="handicap_selector_label">Choose your handicap</p>
+
+          <select id="handicap_listbox">
+            <option value="0">0</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+            <!-- TODO: correct element type; set to listobx 1-5 -->
+          </select>
+        </div>
+        
+        <div id="submit_box">
+          <!--input id="submit_button" type="button" onclick="submitSelection()" value="Play Go!"-->
+          <div id="submit_button" class="stone_button" onclick="submitSelection()">GO!</div>
+        </div>
+      </div>
+      <div id="hero_div_bottom">
+        <img class="hero_img" src="images//NineDragonsScroll_bottom_small.jpg">
+        <div id="copywrite_shadow">&nbsp;</div>
+        <div id="copywrite">© Angelo Polo - 2014</div>
+      </div>
     </div>
 
-    <div id="footer">
-      <div id="copywrite">© Angelo Polo - 2014</div>
+    <!-- start game -->
+    <div id="game">
+      <div id="messages_parent">
+        <div id="messages"></div>
+      </div>
+      <div id="game_header">Polo Go</div>
+
+      <div id="board"></div>
+      <div class="clear"></div>
+
+      <div id="buttons">
+        <button id="restart_button" class="game_button stone_button">Restart</button>
+        <button id="pass_button" class="game_button stone_button">Pass</button>
+        <button id="undo_button" class="game_button stone_button">Undo</button>
+      </div>
+
+      <div id="footer">
+        <div id="game_copywrite">© Angelo Polo - 2014</div>
+      </div>
     </div>
+
   </div>
 </body>
 </html>

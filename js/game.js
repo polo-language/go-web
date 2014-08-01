@@ -1,4 +1,9 @@
-function go() {
+// TESTING:
+function runGo() {
+  go(9, 0);
+}
+
+function go(boardSize, handicap) {
   'use strict';
   // 'global' consts:
   var intersections = [],
@@ -7,7 +12,7 @@ function go() {
       playerColor = 'w',
       boardLocked = false;
 
-  var theBoard = buildBoard(13);
+  var theBoard = buildBoard(parseInt(boardSize));
   // TODO: move these above since not set individually per board
   stoneImages.w = 'images/stone_white_55x55.png';
   stoneImages.b = 'images/stone_black_55x55.png';
@@ -55,20 +60,23 @@ function go() {
           'width': '603px',
           'height': '603px',
           'margin': '5px',
-          'border': '1px solid green',
         };
         break;
       case 13:
         board = new Board(boardSize, 'images/board_13x13.png');
         tableCss = {
-          'width': '603px',
-          'height': '603px',
+          'width': '605px',
+          'height': '605px',
           'margin': '5px',
-          'border': '1px solid green',
         };
         break;
       case 19:
         board = new Board(boardSize, 'images/board_19x19.png');
+        tableCss = {
+          'width': '590px',
+          'height': '590px',
+          'margin': '10px 0 0 15px',
+        };
         break;
       default:
         throw 'Invalid board size.';        
@@ -82,7 +90,8 @@ function go() {
     $('.cell').click(function () {
       placeStone(this);
     });
-    return  }
+    return;
+  }
 
   function placeStone(that) {
     var cellNum = that.id.split('_')[1]; // get number after underscore
@@ -171,6 +180,7 @@ function go() {
     $('.cell').css('backgroundImage', 'none');
     setPlayerColor('w');
     flashMessageBox('Game Reset');
+    swapSelectorForBoard(); // in swappers.js
   };
 
   function submitMove(colAndRow) {
