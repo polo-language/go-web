@@ -8,89 +8,134 @@ function go(boardSize, handicap) {
   // 'global' consts:
   var intersections = [],
       moves = [],
-      stoneImages = {w: '', b: ''},
+      stoneImages = {w: 'images/stone_white_55x55.png', b: 'images/stone_black_55x55.png'},
+      //cursorImages = {w: 'images/cursor_w.png', b: 'images/cursor_b.png'},
       playerColor = 'w',
-      boardLocked = false;
+      boardLocked = false,
+      timeoutId;
 
   var theBoard = buildBoard(parseInt(boardSize));
-  // TODO: move these above since not set individually per board
-  stoneImages.w = 'images/stone_white_55x55.png';
-  stoneImages.b = 'images/stone_black_55x55.png';
-        
-
+  
   // Templates:
   function Board(boardSize, imgPath) {
-    this.imgSrc = imgPath;
     var lastCellNum = boardSize * boardSize - 1;
 
-    this.generateTableHtml = function () {
-      var t = '<table id="table">';
-      for (var c = 0; c < boardSize; ++c) {
-        t += '<tr>';
-        for (var r = 0; r < boardSize; ++r) {
-          t += '<td id="cell_' + this.getCellNum(c, r) + '" class="cell"></td>';
-        }
-        t += '</tr>';
-      }
-      t += '</table>';
-      return t;
-    };
-    this.getCellNum = function (col, row) {
+    function getCellNum(col, row) {
       if (col >= boardSize || row >= boardSize)
         throw new RangeError('Invalid col or row in getCellNum()');
       return col*boardSize + row;
     };
+    
     this.getColRow = function (cellNum) {
       if (cellNum > lastCellNum)
         throw new RangeError('Invalid cellNum in getColRow()');
       return [cellNum % boardSize, Math.floor(cellNum/boardSize)];
     };
-  }
+
+    this.imgSrc = function () {
+      switch (boardSize) {
+        case 9:
+          return 'images/board_9x9.png';
+        case 13:
+          return 'images/board_13x13.png';
+        case 19:
+          return 'images/board_19x19.png';
+        default: // Only need on first switch
+          throw 'Invalid board size.';
+      }
+    }( );
+
+    this.tableCss = function () {
+      switch (boardSize) {
+        case 9:
+          return {
+            'width': '603px',
+            'height': '603px',
+            'margin': '5px',
+          };
+        case 13:
+          return {
+            'width': '605px',
+            'height': '605px',
+            'margin': '5px',
+          };
+        case 19:
+          return {
+            'width': '590px',
+            'height': '590px',
+            'margin': '10px 0 0 15px',
+          };
+      }
+    }( );
+
+    this.tableHtml = function () {
+      var t = '<table id="table">';
+      for (var c = 0; c < boardSize; ++c) {
+        t += '<tr>';
+        for (var r = 0; r < boardSize; ++r) {
+          t += '<td id="cell_' + getCellNum(c, r) + '" class="cell"></td>';
+        }
+        t += '</tr>';
+      }
+      t += '</table>';
+      return t;
+    }( );
+
+    this.cursorImages = function () {
+      switch (boardSize) {
+        case 9:
+          return {w: 'images/cursors/cursor_w_65.png', b: 'images/cursors/cursor_b_65.png'};
+        case 13:
+          return {w: 'images/cursors/cursor_w_44.png', b: 'images/cursors/cursor_b_44.png'};
+        case 19:
+          return {w: 'images/cursors/cursor_w_29.png', b: 'images/cursors/cursor_b_29.png'};
+      }
+    }( );
+
+    this.togglePlayerColor = function () {
+      if (playerColor === 'w')
+        this.setPlayerColor('b');
+      else
+        this.setPlayerColor('w');
+    };
+
+    this.setPlayerColor = function (newColor) {
+      var offset;
+      switch (boardSize) {
+        case 9:
+          offset = 22;
+          break;
+        case 13:
+          offset = 17;
+          break;
+        case 19:
+          offset = 10;
+          break;          
+      }
+      return function (newColor) {
+        playerColor = newColor;
+        document.getElementById('board').style.cursor = 'url(' + this.cursorImages[playerColor] + ') ' + offset + ' ' + offset + ', crosshair';
+      };
+    }( );
+  } // end: Board()
 
   // Methods:
   function buildBoard(boardSize) {
+    // controls interaction between page and board object
     var boardDiv = document.getElementById('board'),
-        board,
+        board = new Board(boardSize),
         tableCss;
     
-    switch (boardSize) {
-      case 9:
-        board = new Board(boardSize, 'images/board_9x9_550x550.png');
-        tableCss = {
-          'width': '603px',
-          'height': '603px',
-          'margin': '5px',
-        };
-        break;
-      case 13:
-        board = new Board(boardSize, 'images/board_13x13.png');
-        tableCss = {
-          'width': '605px',
-          'height': '605px',
-          'margin': '5px',
-        };
-        break;
-      case 19:
-        board = new Board(boardSize, 'images/board_19x19.png');
-        tableCss = {
-          'width': '590px',
-          'height': '590px',
-          'margin': '10px 0 0 15px',
-        };
-        break;
-      default:
-        throw 'Invalid board size.';        
-    }
     // set board and table HTML and CSS
     boardDiv.style.backgroundImage = 'url("' + board.imgSrc + '")';
     boardDiv.style.backgroundSize = '100% 100%';
-    boardDiv.innerHTML = board.generateTableHtml();
-    setPlayerColor('w');
-    $('#table').css(tableCss);
+    boardDiv.innerHTML = board.tableHtml;
+    board.setPlayerColor('w');
+    $('#table').css(board.tableCss);
     $('.cell').click(function () {
       placeStone(this);
     });
-    return;
+    return board;
   }
 
   function placeStone(that) {
@@ -101,12 +146,10 @@ function go(boardSize, handicap) {
     //boardLocked = true;
     intersections[cellNum] = playerColor;
     moves[moves.length] = Number(cellNum);
-    //console.log(moves); // debug
-    //console.log(theBoard.getColRow(cellNum));
     $(that).css({'background-image': 'url("' + stoneImages[playerColor] + '")',
-                   'background-repeat': 'no-repeat',
-                   'background-size': '100% 100%',
-                   'background-position': 'center center'});
+                 'background-repeat': 'no-repeat',
+                 'background-size': '100% 100%',
+                 'background-position': 'center center'});
     // TODO:
     /*try {
       //submitMove(theBoard.getColRow(cellNum));
@@ -114,19 +157,7 @@ function go(boardSize, handicap) {
     finally {
       boardLocked = false;
     }*/
-    togglePlayerColor();
-  }
-
-  function togglePlayerColor() {
-    if (playerColor === 'w')
-      setPlayerColor('b');
-    else
-      setPlayerColor('w');
-  }
-
-  function setPlayerColor(newColor) {
-    playerColor = newColor;
-    document.getElementById('board').style.cursor = 'url(images/cursor_' + playerColor + '.png) 10 10, crosshair';
+    theBoard.togglePlayerColor();
   }
 
   // button click handlers
@@ -138,14 +169,15 @@ function go(boardSize, handicap) {
     else
       flashMessageBox('Black Passes');
     moves[moves.length] = 'pass';
-    togglePlayerColor();
+    theBoard.togglePlayerColor();
   };
 
   function flashMessageBox(message) {
     var messageDiv = document.getElementById('messages');
+    window.clearTimeout(timeoutId);
     messageDiv.innerHTML = message;
     messageDiv.style.visibility = 'visible';
-    window.setTimeout(function () {
+    timeoutId = window.setTimeout(function () {
       messageDiv.style.visibility = 'hidden';
     }, 2000);
   }
@@ -161,12 +193,12 @@ function go(boardSize, handicap) {
         flashMessageBox('Undo Black\'s Move');
       else
         flashMessageBox('Undo White\'s Move');
-      togglePlayerColor();
+      theBoard.togglePlayerColor();
       // TODO: submitMove();
     }
     else if (lastMove === 'pass') {
       // TODO: submitMove();
-      togglePlayerColor();
+      theBoard.togglePlayerColor();
     }
     return; // handles pop from empty array too
   };
@@ -178,7 +210,7 @@ function go(boardSize, handicap) {
     intersections = [];
     moves = [];
     $('.cell').css('backgroundImage', 'none');
-    setPlayerColor('w');
+    theBoard.setPlayerColor('w');
     flashMessageBox('Game Reset');
     swapSelectorForBoard(); // in swappers.js
   };
