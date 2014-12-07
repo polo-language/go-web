@@ -15,58 +15,58 @@ function go(boardSize, handicap) {
 
   var theBoard = buildBoard(parseInt(boardSize));
   
-  function Board(boardSize, imgPath) {
+  function Board(boardSize) {
     var lastCellNum = boardSize * boardSize - 1;
 
     function getCellNum(col, row) {
-      if (col >= boardSize || row >= boardSize)
+      if (col >= boardSize || row >= boardSize) 
         throw new RangeError('Invalid col or row in getCellNum()');
-      return col*boardSize + row;
-    };
+      return col * boardSize + row;
+    }
     
     this.getColRow = function (cellNum) {
       if (cellNum > lastCellNum)
         throw new RangeError('Invalid cellNum in getColRow()');
-      return [cellNum % boardSize, Math.floor(cellNum/boardSize)];
+      return [cellNum % boardSize, Math.floor(cellNum / boardSize)];
     };
 
-    this.imgSrc = function () {
+    this.imgSrc = (function () {
       switch (boardSize) {
-        case 9:
-          return 'images/board_9x9.png';
-        case 13:
-          return 'images/board_13x13.png';
-        case 19:
-          return 'images/board_19x19.png';
-        default: // Only need on first switch
-          throw 'Invalid board size.';
+      case 9:
+        return 'images/board_9x9.png';
+      case 13:
+        return 'images/board_13x13.png';
+      case 19:
+        return 'images/board_19x19.png';
+      default: // Only need on first switch
+        throw 'Invalid board size.';
       }
-    }( );
+    }());
 
-    this.tableCss = function () {
+    this.tableCss = (function () {
       switch (boardSize) {
-        case 9:
-          return {
-            'width': '603px',
-            'height': '603px',
-            'margin': '5px',
-          };
-        case 13:
-          return {
-            'width': '605px',
-            'height': '605px',
-            'margin': '5px',
-          };
-        case 19:
-          return {
-            'width': '590px',
-            'height': '590px',
-            'margin': '10px 0 0 15px',
-          };
+      case 9:
+        return {
+          'width': '603px',
+          'height': '603px',
+          'margin': '5px',
+        };
+      case 13:
+        return {
+          'width': '605px',
+          'height': '605px',
+          'margin': '5px',
+        };
+      case 19:
+        return {
+          'width': '590px',
+          'height': '590px',
+          'margin': '10px 0 0 15px',
+        };
       }
-    }( );
+    }());
 
-    this.tableHtml = function () {
+    this.tableHtml = (function () {
       var t = '<table id="table">';
       for (var c = 0; c < boardSize; ++c) {
         t += '<tr>';
@@ -77,18 +77,18 @@ function go(boardSize, handicap) {
       }
       t += '</table>';
       return t;
-    }( );
+    }());
 
-    this.cursorImages = function () {
+    this.cursorImages = (function () {
       switch (boardSize) {
-        case 9:
-          return {w: 'images/cursors/cursor_w_65.png', b: 'images/cursors/cursor_b_65.png'};
-        case 13:
-          return {w: 'images/cursors/cursor_w_44.png', b: 'images/cursors/cursor_b_44.png'};
-        case 19:
-          return {w: 'images/cursors/cursor_w_29.png', b: 'images/cursors/cursor_b_29.png'};
+      case 9:
+        return {w: 'images/cursors/cursor_w_65.png', b: 'images/cursors/cursor_b_65.png'};
+      case 13:
+        return {w: 'images/cursors/cursor_w_44.png', b: 'images/cursors/cursor_b_44.png'};
+      case 19:
+        return {w: 'images/cursors/cursor_w_29.png', b: 'images/cursors/cursor_b_29.png'};
       }
-    }( );
+    }());
 
     this.togglePlayerColor = function () {
       if (playerColor === 'w')
@@ -97,32 +97,31 @@ function go(boardSize, handicap) {
         this.setPlayerColor('w');
     };
 
-    this.setPlayerColor = function (newColor) {
+    this.setPlayerColor = (function (newColor) {
       var offset;
       switch (boardSize) {
-        case 9:
-          offset = 22;
-          break;
-        case 13:
-          offset = 17;
-          break;
-        case 19:
-          offset = 10;
-          break;          
+      case 9:
+        offset = 22;
+        break;
+      case 13:
+        offset = 17;
+        break;
+      case 19:
+        offset = 10;
+        break;          
       }
       return function (newColor) {
         playerColor = newColor;
         document.getElementById('board').style.cursor = 'url(' + this.cursorImages[playerColor] + ') ' + offset + ' ' + offset + ', crosshair';
       };
-    }( );
+    }());
   } // end: Board()
 
   // Methods:
   function buildBoard(boardSize) {
     // controls interaction between page and board object
     var boardDiv = document.getElementById('board'),
-        board = new Board(boardSize),
-        tableCss;
+        board = new Board(boardSize);
     
     // set board and table HTML and CSS
     boardDiv.style.backgroundImage = 'url("' + board.imgSrc + '")';
@@ -205,10 +204,10 @@ function go(boardSize, handicap) {
     $('.cell').css('backgroundImage', 'none');
     theBoard.setPlayerColor('w');
     flashMessageBox('Game Reset');
-    swapSelectorForBoard(); // in swappers.js
+    swappers.swapSelectorForBoard(); // in swappers.js
   };
 
-  function submitMove(colAndRow) {
+  /*function submitMove(colAndRow) {
     $.ajax({
       type: 'GET',
       url: '/move',
@@ -224,7 +223,7 @@ function go(boardSize, handicap) {
         throw 'Unable to connect to go engine.';
       }
     });
-  }
+  }*/
 
 } // END: go()
 

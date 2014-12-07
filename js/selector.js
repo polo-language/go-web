@@ -1,3 +1,4 @@
+'use strict';
 $(document).ready(function () {
   animateSelector();
 });
@@ -5,8 +6,6 @@ $(document).ready(function () {
 function animateSelector() {
   var wrapper = $('#wrapper');
   var startLeft = wrapper.offset().left + wrapper.width() + 10;
-  //var selectorPanel = document.getElementById('selector_panel');
-  //selectorPanel.setAttribute(...);
   var selectorPanel = $('#selector_panel');
   selectorPanel.css({
     'left': startLeft,
@@ -25,7 +24,7 @@ function submitSelection() {
   var handicap = handicapEl.options[handicapEl.selectedIndex].value;
 
   go(boardSize, handicap); // in game.js
-  swapBoardForSelector(); // in swappers.js
+  swappers.swapBoardForSelector(); // in swappers.js
 }
 
 $(document).ready(function () {
