@@ -14,8 +14,26 @@ function go(boardSize, handicap) {
       timeoutId;
 
   var theBoard = buildBoard(parseInt(boardSize));
+
+  function buildBoard(boardSize, handicap) {
+    // controls interaction between page and board object
+    var boardDiv = document.getElementById('board'),
+        board = new Board(boardSize, handicap);
+    
+    // set board and table HTML and CSS
+    boardDiv.style.backgroundImage = 'url("' + board.imgSrc + '")';
+    boardDiv.style.backgroundSize = '100% 100%';
+    boardDiv.innerHTML = board.tableHtml;
+    // TODO: placeHandicaps(handicap);
+    board.setPlayerColor('b');
+    $('#table').css(board.tableCss);
+    $('.cell').click(function () {
+      placeStone(this);
+    });
+    return board;
+  }
   
-  function Board(boardSize) {
+  function Board(boardSize, handicap) {
     var lastCellNum = boardSize * boardSize - 1;
 
     function getCellNum(col, row) {
@@ -28,6 +46,13 @@ function go(boardSize, handicap) {
       if (cellNum > lastCellNum)
         throw new RangeError('Invalid cellNum in getColRow()');
       return [cellNum % boardSize, Math.floor(cellNum / boardSize)];
+    };
+
+    this.togglePlayerColor = function () {
+      if (playerColor === 'w')
+        this.setPlayerColor('b');
+      else
+        this.setPlayerColor('w');
     };
 
     this.imgSrc = (function () {
@@ -90,13 +115,6 @@ function go(boardSize, handicap) {
       }
     }());
 
-    this.togglePlayerColor = function () {
-      if (playerColor === 'w')
-        this.setPlayerColor('b');
-      else
-        this.setPlayerColor('w');
-    };
-
     this.setPlayerColor = (function (newColor) {
       var offset;
       switch (boardSize) {
@@ -112,39 +130,30 @@ function go(boardSize, handicap) {
       }
       return function (newColor) {
         playerColor = newColor;
-        document.getElementById('board').style.cursor = 'url(' + this.cursorImages[playerColor] + ') ' + offset + ' ' + offset + ', crosshair';
+        document.getElementById('board').style.cursor =
+            'url(' + this.cursorImages[playerColor] + ') ' +
+            offset + ' ' + offset + ', crosshair';
       };
     }());
   } // end: Board()
 
-  // Methods:
-  function buildBoard(boardSize) {
-    // controls interaction between page and board object
-    var boardDiv = document.getElementById('board'),
-        board = new Board(boardSize);
-    
-    // set board and table HTML and CSS
-    boardDiv.style.backgroundImage = 'url("' + board.imgSrc + '")';
-    boardDiv.style.backgroundSize = '100% 100%';
-    boardDiv.innerHTML = board.tableHtml;
-    board.setPlayerColor('b');
-    $('#table').css(board.tableCss);
-    $('.cell').click(function () {
-      placeStone(this);
-    });
-    return board;
-  }
+  /* TODO:
+  function placeHandicaps(handicap) {}
+  */
 
-  function placeStone(that) {
+  // TODO: rewrite placeStone(clickedCell) to call new function placeStone(cellNum)
+  // TODO: make stone object to be replicated and placed each time
+
+  function placeStone(clickedCell) {
     // TODO: set up board locking while waiting for async server response
-    var cellNum = that.id.split('_')[1]; // get number after underscore
+    var cellNum = clickedCell.id.split('_')[1]; // get number after underscore
     
     if (intersections[cellNum] === 'w' || intersections[cellNum] === 'b')
       return;
 
     intersections[cellNum] = playerColor;
     moves[moves.length] = Number(cellNum);
-    $(that).css({'background-image': 'url("' + stoneImages[playerColor] + '")',
+    $(clickedCell).css({'background-image': 'url("' + stoneImages[playerColor] + '")',
                  'background-repeat': 'no-repeat',
                  'background-size': '100% 100%',
                  'background-position': 'center center'});
