@@ -1,7 +1,3 @@
-// TESTING:
-function runGo() {
-  go(9, 0);
-}
 
 function go(boardSize, handicap) {
   'use strict';
@@ -9,14 +5,16 @@ function go(boardSize, handicap) {
   var intersections = [],
       moves = [],
       stoneImages = {w: 'images/stone_white_55x55.png', b: 'images/stone_black_55x55.png'},
-      //cursorImages = {w: 'images/cursor_w.png', b: 'images/cursor_b.png'},
-      playerColor = 'w',
-      boardLocked = false,
+      handicaps = {
+        nine: [[6, 2], [2, 6], [6, 6], [2, 2], [4, 4]],
+        thirteen: [[9, 3], [3, 9], [9, 9], [3, 3], [6, 6]],
+        nineteen: [[15, 3], [3, 15], [15, 15], [3, 3], [9, 9]]
+      },
+      playerColor,
       timeoutId;
 
   var theBoard = buildBoard(parseInt(boardSize));
   
-  // Templates:
   function Board(boardSize, imgPath) {
     var lastCellNum = boardSize * boardSize - 1;
 
@@ -130,7 +128,7 @@ function go(boardSize, handicap) {
     boardDiv.style.backgroundImage = 'url("' + board.imgSrc + '")';
     boardDiv.style.backgroundSize = '100% 100%';
     boardDiv.innerHTML = board.tableHtml;
-    board.setPlayerColor('w');
+    board.setPlayerColor('b');
     $('#table').css(board.tableCss);
     $('.cell').click(function () {
       placeStone(this);
@@ -139,24 +137,19 @@ function go(boardSize, handicap) {
   }
 
   function placeStone(that) {
+    // TODO: set up board locking while waiting for async server response
     var cellNum = that.id.split('_')[1]; // get number after underscore
-    // check if booardLocked === true || ...
+    
     if (intersections[cellNum] === 'w' || intersections[cellNum] === 'b')
       return;
-    //boardLocked = true;
+
     intersections[cellNum] = playerColor;
     moves[moves.length] = Number(cellNum);
     $(that).css({'background-image': 'url("' + stoneImages[playerColor] + '")',
                  'background-repeat': 'no-repeat',
                  'background-size': '100% 100%',
                  'background-position': 'center center'});
-    // TODO:
-    /*try {
-      //submitMove(theBoard.getColRow(cellNum));
-    }
-    finally {
-      boardLocked = false;
-    }*/
+    // TODO: submitMove(theBoard.getColRow(cellNum));
     theBoard.togglePlayerColor();
   }
 
@@ -182,7 +175,7 @@ function go(boardSize, handicap) {
     }, 2000);
   }
 
-  // undo (move)
+  // undo move
   document.getElementById('undo_button').onclick = function () {
     var lastMove = moves.pop();
     if (typeof lastMove === 'number') {
