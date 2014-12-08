@@ -61,7 +61,6 @@ function go(boardSize, handicap) {
                                         GO_CONSTS.handicaps[boardSize][i][1]);
       setPlayerColor('b');
       placeStone(document.getElementById(cellId));
-      console.log(i + ': ' + cellId);
     }
     setPlayerColor('w');
   }
