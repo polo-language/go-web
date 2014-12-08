@@ -1,15 +1,32 @@
+var GO_CONSTS = {
+  stoneImages: {w: 'images/stone_white_55x55.png', b: 'images/stone_black_55x55.png'},
+  cursorImages: {
+    '9': {w: 'images/cursors/cursor_w_65.png', b: 'images/cursors/cursor_b_65.png'},
+    '13': {w: 'images/cursors/cursor_w_44.png', b: 'images/cursors/cursor_b_44.png'},
+    '19': {w: 'images/cursors/cursor_w_29.png', b: 'images/cursors/cursor_b_29.png'}
+  },
+  cursorOffsets: { '9': 22, '13': 17, '19': 10 },
+  boardImages: {
+    '9': 'images/board_9x9.png',
+    '13': 'images/board_13x13.png',
+    '19': 'images/board_19x19.png'
+  },
+  handicaps: {
+    '9': [[6, 2], [2, 6], [6, 6], [2, 2], [4, 4]],
+    '13': [[9, 3], [3, 9], [9, 9], [3, 3], [6, 6]],
+    '19': [[15, 3], [3, 15], [15, 15], [3, 3], [9, 9]]
+  },
+};
+
+var GO_STRINGS = {
+  // TODO: ?
+};
 
 function go(boardSize, handicap) {
   'use strict';
   // 'global' consts:
   var intersections = [],
       moves = [],
-      stoneImages = {w: 'images/stone_white_55x55.png', b: 'images/stone_black_55x55.png'},
-      handicaps = {
-        nine: [[6, 2], [2, 6], [6, 6], [2, 2], [4, 4]],
-        thirteen: [[9, 3], [3, 9], [9, 9], [3, 3], [6, 6]],
-        nineteen: [[15, 3], [3, 15], [15, 15], [3, 3], [9, 9]]
-      },
       playerColor,
       timeoutId;
 
@@ -24,7 +41,7 @@ function go(boardSize, handicap) {
     boardDiv.style.backgroundImage = 'url("' + board.imgSrc + '")';
     boardDiv.style.backgroundSize = '100% 100%';
     boardDiv.innerHTML = board.tableHtml;
-    // TODO: placeHandicaps(handicap);
+    placeHandicaps(boardSize, handicap);
     board.setPlayerColor('b');
     $('#table').css(board.tableCss);
     $('.cell').click(function () {
@@ -47,6 +64,14 @@ function go(boardSize, handicap) {
         throw new RangeError('Invalid cellNum in getColRow()');
       return [cellNum % boardSize, Math.floor(cellNum / boardSize)];
     };
+    
+    this.setPlayerColor = function (newColor) {
+      playerColor = newColor;
+      document.getElementById('board').style.cursor = 
+          'url(' + GO_CONSTS.cursorImages[boardSize][playerColor] + ') ' +
+          GO_CONSTS.cursorOffsets[boardSize] + ' ' +
+          GO_CONSTS.cursorOffsets[boardSize] + ', crosshair';
+    };
 
     this.togglePlayerColor = function () {
       if (playerColor === 'w')
@@ -55,18 +80,7 @@ function go(boardSize, handicap) {
         this.setPlayerColor('w');
     };
 
-    this.imgSrc = (function () {
-      switch (boardSize) {
-      case 9:
-        return 'images/board_9x9.png';
-      case 13:
-        return 'images/board_13x13.png';
-      case 19:
-        return 'images/board_19x19.png';
-      default: // Only need on first switch
-        throw 'Invalid board size.';
-      }
-    }());
+    this.imgSrc = GO_CONSTS.boardImages[boardSize];
 
     this.tableCss = (function () {
       switch (boardSize) {
@@ -103,46 +117,22 @@ function go(boardSize, handicap) {
       t += '</table>';
       return t;
     }());
-
-    this.cursorImages = (function () {
-      switch (boardSize) {
-      case 9:
-        return {w: 'images/cursors/cursor_w_65.png', b: 'images/cursors/cursor_b_65.png'};
-      case 13:
-        return {w: 'images/cursors/cursor_w_44.png', b: 'images/cursors/cursor_b_44.png'};
-      case 19:
-        return {w: 'images/cursors/cursor_w_29.png', b: 'images/cursors/cursor_b_29.png'};
-      }
-    }());
-
-    this.setPlayerColor = (function (newColor) {
-      var offset;
-      switch (boardSize) {
-      case 9:
-        offset = 22;
-        break;
-      case 13:
-        offset = 17;
-        break;
-      case 19:
-        offset = 10;
-        break;          
-      }
-      return function (newColor) {
-        playerColor = newColor;
-        document.getElementById('board').style.cursor =
-            'url(' + this.cursorImages[playerColor] + ') ' +
-            offset + ' ' + offset + ', crosshair';
-      };
-    }());
   } // end: Board()
 
-  /* TODO:
-  function placeHandicaps(handicap) {}
-  */
-
-  // TODO: rewrite placeStone(clickedCell) to call new function placeStone(cellNum)
-  // TODO: make stone object to be replicated and placed each time
+  // TODO:
+  // id="cell_' + getCellNum(c, r)
+  function placeHandicaps(boardSize, handicap) {
+    var handicapCoords;
+    switch (boardSize) {
+    case 9:
+      //handicapCoords = 
+      break;
+    case 13:
+      break;
+    case 19:
+      break;
+    }
+  }
 
   function placeStone(clickedCell) {
     // TODO: set up board locking while waiting for async server response
@@ -153,10 +143,12 @@ function go(boardSize, handicap) {
 
     intersections[cellNum] = playerColor;
     moves[moves.length] = Number(cellNum);
-    $(clickedCell).css({'background-image': 'url("' + stoneImages[playerColor] + '")',
-                 'background-repeat': 'no-repeat',
-                 'background-size': '100% 100%',
-                 'background-position': 'center center'});
+    $(clickedCell).css({
+        'background-image': 'url("' + GO_CONSTS.stoneImages[playerColor] + '")',
+        'background-repeat': 'no-repeat',
+        'background-size': '100% 100%',
+        'background-position': 'center center'
+    });
     // TODO: submitMove(theBoard.getColRow(cellNum));
     theBoard.togglePlayerColor();
   }
@@ -206,7 +198,7 @@ function go(boardSize, handicap) {
 
   // restart/clear board
   document.getElementById('restart_button').onclick = function () {
-    // should initiate some grander restart procedure with eventual settings screen...
+    // should initiate some grander restart procedure with settings screen...
     // TODO: restartServer();
     intersections = [];
     moves = [];
