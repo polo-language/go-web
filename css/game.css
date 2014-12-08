@@ -41,6 +41,12 @@
   float: left; /* prevent margin collapse */
 }
 
+.cell {
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  background-position: center center;
+}
+
 #buttons {
   width: auto;
   height: 40px;
